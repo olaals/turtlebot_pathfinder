@@ -1,6 +1,6 @@
 # Create an autonomous pathfinder #
 --------------------------
-Turtlebot simulation in Gazebo. The aim of this task is to navigate the turtlebot autonomously from position (x,y) = (0,0) to (x,y) = (4,4) in a 9m x 9m map with a random arrangement of walls.
+Turtlebot simulation XXXXX The aim of this task is to navigate the turtlebot autonomously from position (x,y) = (0,0) to (x,y) = (4,4) in a 9m x 9m map with a random arrangement of walls.
 
 
 ## Requrements ##
