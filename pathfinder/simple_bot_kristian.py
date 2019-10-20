@@ -33,10 +33,17 @@ class SimpleBot:
 
         while not rospy.is_shutdown():
             print(self.range_right)
-            if self.dist_to_wall_in_front < 0.5 and self.range_right<0.5:
-                msg = Twist()
-                msg.angular.z=0.2
-                vel_pub.publish(msg)
+
+
+            if self.dist_to_wall_in_front < 0.5:
+                if self.range_right < 0.5:
+                    msg = Twist()
+                    msg.angular.z=0.2
+                    vel_pub.publish(msg)
+                else:
+                    msg = Twist()
+                    msg.angular.z=-0.2
+                    vel_pub.publish(msg)
                 # Stop
                 #msg = Twist()
                 #vel_pub.publish(msg)
