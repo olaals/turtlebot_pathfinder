@@ -24,12 +24,14 @@ class SimpleBot:
 
         while not rospy.is_shutdown():
             print(self.dist_to_wall_in_front)
-            if self.dist_to_wall_in_front > 0.5:
+            if self.dist_to_wall_in_front < 0.5:
+                # Stop
                 msg = Twist()
-                msg.linear.x = 0.3
                 vel_pub.publish(msg)
             else:
+                # GO
                 msg = Twist()
+                msg.linear.x = 0.3
                 vel_pub.publish(msg)
             self.rate.sleep()
 
