@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
+import numpy as np
 from math import ceil
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
@@ -19,15 +20,19 @@ class SimpleBot:
         mid_index = (int)(len(ranges) / 2)
         self.dist_to_wall_in_front = ranges[mid_index]
         self.range_left=ranges[1]
-        self.range_right=ranges[len(ranges)-1]
+
+        theta = np.pi/2.0-msg.angle_max
+        self.range_right=ranges[len(ranges)-1]*np.cos(theta)
 
     def main(self):
 
         laser_sub = rospy.Subscriber('/scan', LaserScan, self.update_dist_callback)
         vel_pub = rospy.Publisher('/mobile_base/commands/velocity', Twist)
 
+
+
         while not rospy.is_shutdown():
-            print(self.dist_to_wall_in_front)
+            print(self.range_right)
             if self.dist_to_wall_in_front < 1.0:
                 # Stop
                 msg = Twist()
@@ -37,16 +42,11 @@ class SimpleBot:
                 msg = Twist()
                 msg.linear.x = 0.3
                 vel_pub.publish(msg)
-                
-            if self.range_left<1.0:
-                msg = Twist()
-                msg.angular.z=-0.2
-                vel_pub.publish(msg)
 
-            elif self.range_right <1.0:
-                msg = Twist()
-                msg.angular.z=0.2
-                vel_pub.publish(msg)
+                if self.range_right >0.5:
+                    msg = Twist()
+                    msg.angular.z=-0.2
+                    vel_pub.publish(msg)
                 
             self.rate.sleep()
 
