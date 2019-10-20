@@ -37,16 +37,17 @@ class SimpleBot:
                 msg = Twist()
                 msg.linear.x = 0.3
                 vel_pub.publish(msg)
+                
             if self.range_left<1.0:
                 msg = Twist()
                 msg.angular.z=-0.2
                 vel_pub.publish(msg)
+
             elif self.range_right <1.0:
                 msg.Twist()
                 msg.angular.z=0.2
                 vel_pub.publish(msg)
-
-            if 
+                
             self.rate.sleep()
 
 
