@@ -16,10 +16,10 @@ class SimpleBot:
     
     def update_dist_callback(self, msg):
         ranges = msg.ranges
-        mid_index = int(len(ranges) / 2)
+        mid_index = (int)(len(ranges) / 2)
         self.dist_to_wall_in_front = ranges[mid_index]
         self.range_left=ranges[1]
-        self.range_right=ranges[len(ranges)]
+        self.range_right=ranges[len(ranges)-1]
 
     def main(self):
 
