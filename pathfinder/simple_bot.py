@@ -8,14 +8,19 @@ from geometry_msgs.msg import Twist
 class SimpleBot:
 
     def __init__(self):
-        self.dist_to_wall_in_front = float('inf')
+        self.range_front = float('inf')
+        self.range_left = float('inf')
+        self.range_right = float('inf')
+
         rospy.init_node('simple_bot')
         self.rate = rospy.Rate(10)
     
     def update_dist_callback(self, msg):
         ranges = msg.ranges
-        mid_index = int(len(ranges) / 2)
-        self.dist_to_wall_in_front = ranges[mid_index]
+ 
+        self.range_front = ranges[int(len(ranges) / 2)]
+        self.range_left = ranges[0]
+        self.range_right = ranges[-1]
 
     def main(self):
 
@@ -23,8 +28,8 @@ class SimpleBot:
         vel_pub = rospy.Publisher('/mobile_base/commands/velocity', Twist)
 
         while not rospy.is_shutdown():
-            print(self.dist_to_wall_in_front)
-            if self.dist_to_wall_in_front < 2.0:
+            print(self.range_front)
+            if self.range_front < 2.0:
                 # Stop
                 msg = Twist()
                 vel_pub.publish(msg)
@@ -32,6 +37,10 @@ class SimpleBot:
                 # GO
                 msg = Twist()
                 msg.linear.x = 0.3
+                if self.range_left < 1:
+                    msg.angular.z = -0.3
+                elif self.range_right < 1:
+                    msg.angular.z = 0.3
                 vel_pub.publish(msg)
             self.rate.sleep()
 
