@@ -19,7 +19,7 @@ find_package(OpenCV REQUIRED)
 
 add_action_files(
   DIRECTORY actions
-  FILES get_env.action calculate_point.action 
+  FILES get_env.action calculate_point.action go_to_point.action 
 )
 
 generate_messages(
