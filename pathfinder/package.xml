@@ -32,6 +32,7 @@
   <run_depend>message_runtime</run_depend>
   <run_depend>image_transport</run_depend>
   <run_depend>cv_bridge</run_depend>
+  <run_deoend>message_generation</run_depend>
 
 
   <export>

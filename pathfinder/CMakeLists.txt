@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   image_transport
   message_generation
+  actionlib_msgs
 )
 
 find_package(OpenCV REQUIRED)
@@ -19,14 +20,20 @@ find_package(OpenCV REQUIRED)
 generate_messages(
   DEPENDENCIES
   std_msgs
+  actionlib_msgs
 )
 
-catkin_package(CATKIN_DEPENDS message_runtime roscpp std_msgs geometry_msgs sensor_msgs)
+catkin_package(CATKIN_DEPENDS message_runtime roscpp std_msgs geometry_msgs sensor_msgs actionlib_msgs)
 
 include_directories(
 include
   ${catkin_INCLUDE_DIRS}
   ${openCV_INCLUDE_DIRS}
+)
+
+add_action_files(
+  DIRECTORY actions
+  FILES get_env.action
 )
 
 ## Declare C++ executables:
