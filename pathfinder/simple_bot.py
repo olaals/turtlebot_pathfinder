@@ -29,7 +29,7 @@ class SimpleBot:
 
         while not rospy.is_shutdown():
             print(self.range_front)
-            if self.range_front < 2.0:
+            if self.range_front < 1.0:
                 # Stop
                 msg = Twist()
                 vel_pub.publish(msg)
@@ -37,6 +37,7 @@ class SimpleBot:
                 # GO
                 msg = Twist()
                 msg.linear.x = 0.3
+                msg.linear.z = 1.3
                 if self.range_left < 1:
                     msg.angular.z = -0.3
                 elif self.range_right < 1:

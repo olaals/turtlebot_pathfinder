@@ -17,6 +17,11 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(OpenCV REQUIRED)
 
+add_action_files(
+  DIRECTORY actions
+  FILES get_env.action
+)
+
 generate_messages(
   DEPENDENCIES
   std_msgs
@@ -29,11 +34,6 @@ include_directories(
 include
   ${catkin_INCLUDE_DIRS}
   ${openCV_INCLUDE_DIRS}
-)
-
-add_action_files(
-  DIRECTORY actions
-  FILES get_env.action
 )
 
 ## Declare C++ executables:
