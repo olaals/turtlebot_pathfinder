@@ -11,13 +11,14 @@ class EnvServer:
     _feedback = pathfinder.msg.get_envFeedback()
     _result = pathfinder.msg.get_envResult()
 
-    def __init__(self):
-        rospy.init_node("env_server")
-        self.env_server = actionlib.SimpleActionServer(rospy.get_name(), pathfinder.msg.get_envAction, self.get_env_cb, False)
+    def __init__(self):    
+        self.env_server = actionlib.SimpleActionServer("env_server", pathfinder.msg.get_envAction, self.get_env_cb, False)
         self.env_server.start()
 
-    def get_env_cb(self):
-        print("get env callback running")
+    def get_env_cb(self, goal):
+        rospy.loginfo("get env callback running")
+
+
 
         # Fill result msg with data
         self._result.decision_space = [1, 0, 1, 0]
@@ -27,5 +28,6 @@ class EnvServer:
 
 
 if __name__ == "__main__":
+    rospy.init_node("situational_awareness_py")
     env_server = EnvServer()
     rospy.spin()
