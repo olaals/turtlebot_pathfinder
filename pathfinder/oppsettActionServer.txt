@@ -1,0 +1,12 @@
+1. mkdir actions dir in rospackage
+
+2. Create .action file
+
+3. Cmakelist:
+- find_package(catkin REQUIRED COMPONENTS actionlib_msgs)
+- add_action_files( DIRECTORY actions FILES xxxxx.action)
+- generate_messages( DEPENDENCIES actionlib_msgs)
+- catkin_package(CATKIN_DEPENDS actionlib_msgs)
+
+4. package.xml
+- build og run dependencies : message_generation and actionlib_msgs needs to be added.
