@@ -14,6 +14,8 @@ class SituationalAwareness:
 
     def __init__(self):
 
+        self.rate = rospy.Rate(4)
+
         # Create server for nicer data extraction    
         self.env_server = actionlib.SimpleActionServer("env_server", get_envAction, self.get_env_cb, False)
         self.env_server.start()
@@ -37,9 +39,13 @@ class SituationalAwareness:
         pass
 
     def main(self):
-        pass
+        while not rospy.is_shutdown:
+            if check_for_collision():
+                pass    # TODO: use client
+            self.rate.sleep()
+
 
 if __name__ == "__main__":
     rospy.init_node("situational_awareness_py")
     situational_awareness = SituationalAwareness()
-    rospy.spin()
+    situational_awareness.main()
