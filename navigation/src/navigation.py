@@ -6,7 +6,7 @@ import actionlib
 from geometry_msgs.msg import Point
 
 # import needed messages defined in actions
-from pathfinder.msg import get_envAction, get_envGoal, calculate_pointAction, calculate_pointResult, calculate_pointFeedback
+from tutorial_msgs.msg import get_envAction, get_envGoal, calculate_pointAction, calculate_pointResult, calculate_pointFeedback
 
 class Navigator:
 

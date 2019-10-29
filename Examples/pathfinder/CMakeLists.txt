@@ -17,17 +17,6 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(OpenCV REQUIRED)
 
-add_action_files(
-  DIRECTORY actions
-  FILES get_env.action calculate_point.action go_to_point.action 
-)
-
-generate_messages(
-  DEPENDENCIES
-  std_msgs
-  actionlib_msgs
-  geometry_msgs
-)
 
 catkin_package(CATKIN_DEPENDS message_runtime roscpp std_msgs geometry_msgs sensor_msgs actionlib_msgs)
 

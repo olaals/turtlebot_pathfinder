@@ -3,7 +3,7 @@
 import rospy
 import actionlib
 
-from pathfinder.msg import go_to_pointAction, go_to_pointResult
+from tutorial_msgs.msg import go_to_pointAction, go_to_pointResult
 
 
 class VehicleControl:

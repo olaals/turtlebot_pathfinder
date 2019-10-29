@@ -3,16 +3,16 @@
 import rospy
 import actionlib
 
-import pathfinder.msg
+from tutorial_msgs.msg import get_envFeedback, get_envResult, get_envAction
 
 
 class EnvServer:
     # define messages for action server
-    _feedback = pathfinder.msg.get_envFeedback()
-    _result = pathfinder.msg.get_envResult()
+    _feedback = get_envFeedback()
+    _result = get_envResult()
 
     def __init__(self):    
-        self.env_server = actionlib.SimpleActionServer("env_server", pathfinder.msg.get_envAction, self.get_env_cb, False)
+        self.env_server = actionlib.SimpleActionServer("env_server", get_envAction, self.get_env_cb, False)
         self.env_server.start()
 
     def get_env_cb(self, goal):

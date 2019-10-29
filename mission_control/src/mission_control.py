@@ -3,7 +3,7 @@
 import rospy
 import actionlib
 
-from pathfinder.msg import calculate_pointAction, calculate_pointGoal, go_to_pointAction, go_to_pointGoal
+from tutorial_msgs.msg import calculate_pointAction, calculate_pointGoal, go_to_pointAction, go_to_pointGoal
 
 
 class MissionControl:
