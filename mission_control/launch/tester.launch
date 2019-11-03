@@ -1,0 +1,12 @@
+<launch>
+
+    <include file="$(find followbot)/launch/server_turtlebot_move.launch"/>
+
+    <node
+    pkg="mission_control" 
+    type="mc_test.py"
+    name="mc_test"
+    output="screen">
+    </node>
+
+</launch>

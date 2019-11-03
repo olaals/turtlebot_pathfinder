@@ -2,11 +2,16 @@
 
 import rospy
 import actionlib
+from geometry_msgs.msg import Pose, Twist
 
 from tutorial_msgs.msg import go_to_pointAction, go_to_pointResult
 
 
 class VehicleControl:
+    """
+    Controller that moves vehicle to desired pose. 
+    Communicates with turtlebot through Twist messages. 
+    """
 
     _result = go_to_pointResult()
 
@@ -15,6 +20,8 @@ class VehicleControl:
         self.server.start()
 
     def go_to_point_cb(self, goal):
+        # TODO: implement controller that moves vehicle to goal pose
+        
         self._result.success = 1
         self.server.set_succeeded(self._result)
         # TODO: change success variable to succeeded/aborted

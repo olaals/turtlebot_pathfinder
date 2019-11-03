@@ -3,8 +3,16 @@
 import rospy
 import actionlib
 from smach import State, StateMachine
+from geometry_msgs.msg import Pose
+
+from smach_ros import SimpleActionState
 
 from tutorial_msgs.msg import calculate_pointAction, calculate_pointGoal, go_to_pointAction, go_to_pointGoal
+
+
+final_destination = Pose()
+final_destination.position.x = 4
+final_destination.position.y = 4
 
 
 def calc_point():
@@ -24,11 +32,10 @@ class Traveling(State):
                         output_keys=[])
 
     def execute(self, userdata):
-        goal_twist = userdata.target    # TODO: map target to goal_twist
-        vehicle_client.send_goal(goal_twist)
-        rospy.loginfo("Waiting for vehicle controller...")
-
+        vehicle_client.send_goal(userdata.target)
+        rospy.loginfo("Mission control waiting for vehicle controller...")
         vehicle_client.wait_for_result()
+        
         goal_success = vehicle_client.get_result()
 
         if goal_success:
@@ -48,6 +55,38 @@ class Planning(State):
         return 'success'
 
 
+class CollisionAvoidance(State):
+    """
+    This state should to two things: 
+    1) prevent iminent crash and 
+    2) recover from crashes 
+
+    """
+    def __init__(self):
+        State.__init__(self, outcomes=['success', 'failure'], 
+                        input_keys=[],
+                        output_keys=[])
+
+    def execute(self, userdata):
+        # TODO: collision avoidance and/or recovery routine
+        return 'success'
+
+
+class CheckIfThereYet(State):
+    """ 
+    Should check if vehicle has (finally) arrived at final destination
+    """
+
+    def __init__(self):
+        State.__init__(self, outcomes=['arrived_at_destination', 'not_there_yet'],
+                        input_keys=[],
+                        output_keys=[])
+
+    def execute(self, userdata):
+        # TODO: check if there yet
+        return 'not_there_yet'
+
+
 if __name__ == "__main__":
     rospy.init_node("mission_control")
 
@@ -64,21 +103,25 @@ if __name__ == "__main__":
     # set up state machine
     go_through_maze = StateMachine(outcomes=['success', 'failure'])
 
+    # init userdata
+    go_through_maze.userdata.target = Pose()
+
     with go_through_maze:
 
-        StateMachine.add('PLANNING', Planning, 
+        StateMachine.add('PLANNING', Planning(), 
                             transitions={'success': 'TRAVELING'})
 
-        StateMachine.add('TRAVELING', Traveling, 
+        StateMachine.add('TRAVELING', Traveling(), 
                             transitions={'success': 'CHECK_IF_THERE_YET', 
                                         'aborted': 'COLLISION_AVOIDANCE'})
 
-        StateMachine.add('CHECK_IF_THERE_YET', None, 
+        StateMachine.add('CHECK_IF_THERE_YET', CheckIfThereYet(), 
                             transitions={'arrived_at_destination': 'success', 
                                         'not_there_yet': 'PLANNING'})
 
-        StateMachine.add('COLLISION_AVOIDANCE', None, 
-                            transitions={'success': 'PLANNING'})
+        StateMachine.add('COLLISION_AVOIDANCE', CollisionAvoidance(), 
+                            transitions={'success': 'PLANNING', 
+                                        'failure': 'failure'})
     
 
     go_through_maze.execute()
