@@ -4,6 +4,8 @@ import rospy
 import actionlib
 from smach import State, StateMachine, Concurrence
 from geometry_msgs.msg import Pose
+from sensor_msgs.msg import LaserScan, Image
+from geometry_msgs.msg import Twist
 
 from smach_ros import SimpleActionState, ConditionState
 
@@ -35,9 +37,26 @@ class CollisionAvoidance(State):
                         input_keys=[],
                         output_keys=['target_turn', 'target_forward'])
 
+    def updateDistCallback(self, msg):
+        ranges = msg.ranges
+
+        self.range_front = ranges[int(len(ranges) / 2)]
+        self.range_left = ranges[0]
+        self.range_right = ranges[-1]
+
+    def checkCollision(self):
+        if self.range_front<0.5 or self.range_left<0.5 or self.range_right<0.5:
+            return True
+        else:
+            return False        
+
     def execute(self, userdata):
         # TODO: collision avoidance and/or recovery routine
-        return 'success'
+        self.laser_sub = rospy.Subscriber('/scan',LaserScan,self.updateDistCallback)
+        if self.checkCollision():
+            return 'failure'
+        else:
+            return 'success'
 
 
 class GoalCheck(State):
@@ -50,8 +69,11 @@ class GoalCheck(State):
                         input_keys=[],
                         output_keys=[])
 
+    def image_callback(self):
+        
     def execute(self, userdata):
         # TODO: check if there yet
+    self.image_sub = rospy.Subscriber('camera/rgb/image_raw', Image, self.imageCallback)
         return 'false'
 
 
