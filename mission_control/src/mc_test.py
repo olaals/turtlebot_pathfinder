@@ -28,13 +28,13 @@ if __name__ == "__main__":
     with headless_chicken:
 
         headless_chicken.add('one_step_forward', 
-                    SimpleActionState('turtlebot_move', TurtlebotMoveAction, move(0, 1)),
+                    SimpleActionState('turtlebot_move', TurtlebotMoveAction, move(0.0, 1.0)),
                     transitions={'succeeded': 'turn_360', 
                                 'preempted': 'one_step_forward',
                                 'aborted': 'one_step_forward'})
 
         headless_chicken.add('turn_360',
-                    SimpleActionState('turtlebot_move', TurtlebotMoveAction, move(pi, 0)),
+                    SimpleActionState('turtlebot_move', TurtlebotMoveAction, move(pi, 0.0)),
                     transitions={'succeeded': 'one_step_forward', 
                                 'preempted': 'turn_360',
                                 'aborted': 'turn_360'})
