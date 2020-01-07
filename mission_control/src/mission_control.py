@@ -4,10 +4,11 @@ import rospy
 import actionlib
 from smach import State, StateMachine, Concurrence
 from geometry_msgs.msg import Pose
+from sensor_msgs.msg import LaserScan
 
-from smach_ros import SimpleActionState, ConditionState
+from smach_ros import SimpleActionState, ConditionState, MonitorState, IntrospectionServer
 
-from tutorial_msgs.msg import calculate_pointAction, calculate_pointGoal, go_to_pointAction, go_to_pointGoal 
+from tutorial_msgs.msg import calculate_pointAction, calculate_pointGoal, go_to_pointAction, go_to_pointGoal
 from tutorial_msgs.msg import TurtlebotMoveAction, TurtlebotMoveGoal, TurtlebotMoveResult
 
 
@@ -40,40 +41,8 @@ class CollisionAvoidance(State):
         return 'success'
 
 
-class GoalCheck(State):
-    """ 
-    Check if bot is standing on final destination (yellow spot)
-    """
-
-    def __init__(self):
-        State.__init__(self, outcomes=['true', 'false'],
-                        input_keys=[],
-                        output_keys=[])
-
-    def execute(self, userdata):
-        # TODO: check if there yet
-        return 'false'
-
-
-class CollisionCheck(State):
-    """
-    Checks if bot is about to crash
-    """
-
-    def __init__(self):
-        State.__init__(self, outcomes=['true', 'false'],
-                        input_keys=[],
-                        output_keys=[])
-
-    def execute(self, userdata):
-        while not rospy.is_shutdown():
-            if False:
-                return 'true'
-            # sleep
-
-
-def child_term_cb(outcome_map):
-    return True
+def collsion_check(userdata, msg):
+    return False
 
 
 def move(turn, forward):
@@ -85,7 +54,6 @@ def move(turn, forward):
     goal.forward_distance = forward
 
     return goal
-
 
 
 if __name__ == "__main__":
@@ -117,7 +85,7 @@ if __name__ == "__main__":
     
         transit = Concurrence(outcomes=['at_goal', 'at_target', 'collision_alarm', 'failure'],
                             default_outcome = 'failure',
-                            child_termination_cb = child_term_cb,
+                            child_termination_cb = (lambda x: True),
                             input_keys=['target_turn', 'target_forward'],
                             outcome_map={'at_goal': {'GOAL_CHECK': 'true'},
                                         'at_target': {'MOVE': 'succeeded'},
@@ -128,11 +96,17 @@ if __name__ == "__main__":
 
             Concurrence.add('MOVE', 
                             SimpleActionState('turtlebot_move', TurtlebotMoveAction, 
-                                                move(go_through_maze.userdata.target_turn, go_through_maze.userdata.target_forward)))
+                                                move(go_through_maze.userdata.target_turn, 
+                                                go_through_maze.userdata.target_forward)))
             
-            Concurrence.add('COLLISION_CHECK', CollisionCheck())
-
-            Concurrence.add('GOAL_CHECK', GoalCheck())
+            Concurrence.add('COLLISION_CHECK', MonitorState(
+                'collision_alarm', # TODO: find topic name
+                LaserScan,
+                cond_cb=collsion_check,
+                max_checks=-1,
+                input_keys=[],
+                output_keys=[]
+            ))
 
         StateMachine.add('TRANSIT', transit,
                         transitions={'at_goal': 'success',
@@ -145,4 +119,8 @@ if __name__ == "__main__":
                                     'failure': 'failure'})
     
 
+    sis = IntrospectionServer('mc_introspection', go_through_maze, '/SM_TOP')
+    sis.start()
+
     go_through_maze.execute()
+    sis.stop()
