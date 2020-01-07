@@ -36,9 +36,26 @@ class CollisionAvoidance(State):
                         input_keys=[],
                         output_keys=['target_turn', 'target_forward'])
 
+    def updateDistCallback(self, msg):
+        ranges = msg.ranges
+
+        self.range_front = ranges[int(len(ranges) / 2)]
+        self.range_left = ranges[0]
+        self.range_right = ranges[-1]
+
+    def checkCollision(self):
+        if self.range_front<0.5 or self.range_left<0.5 or self.range_right<0.5:
+            return True
+        else:
+            return False        
+
     def execute(self, userdata):
         # TODO: collision avoidance and/or recovery routine
-        return 'success'
+        self.laser_sub = rospy.Subscriber('/scan',LaserScan,self.updateDistCallback)
+        if self.checkCollision():
+            return 'failure'
+        else:
+            return 'success'
 
 
 def collsion_check(userdata, msg):
